@@ -1,4 +1,10 @@
-# chartjs-plugin-select
+# chartjs-plugin-select  [![npm][npm-image]][npm-url] [![downloads][downloads-image]][downloads-url]
+
+[npm-image]: https://img.shields.io/npm/v/chartjs-plugin-select.svg
+[npm-url]: https://npmjs.org/package/chartjs-plugin-select
+[downloads-image]: https://img.shields.io/npm/dm/chartjs-plugin-select.svg
+[downloads-url]: https://npmjs.org/package/chartjs-plugin-select
+
 A Chartjs plugin to provide drag select event callbacks.
 
 This is inspired mostly from https://github.com/chartjs/Chart.js/issues/5283.
