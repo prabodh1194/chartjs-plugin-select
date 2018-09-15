@@ -14,6 +14,7 @@ In chart options, supply the following:
 
 ```
 select: {
+  events: ['mousedown', 'mouseup'], // this is important!
   selectCallback: (startPoint, endPoint) => {
     /*
       Callback after drag select has completed.
