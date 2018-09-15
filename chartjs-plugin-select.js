@@ -20,6 +20,14 @@ function _binarySearch(array, value) {
     return -1;
 }
 
+function _getIdxInfo(chart) {
+    return chart
+        .getDatasetMeta(0)
+        .data
+        .map(el => [+el._index, +el._model.x, +el._model.y])
+        .sort((a, b) => (a[0]- b[0]));
+}
+
 var select;
 
 // Chartjs Select Plugin
@@ -37,7 +45,7 @@ var selectPlugin = {
             return;
         }
 
-        var i = _binarySearch(select.getIdxInfo(), evt.x);
+        var i = _binarySearch(_getIdxInfo(chart), evt.x);
 
         if (evt.type === 'mousedown') {
             this.mouseup = null;
@@ -48,7 +56,7 @@ var selectPlugin = {
             i -= 1;
         }
 
-        this[evt.type] = select.getIdxInfo()[i];
+        this[evt.type] = _getIdxInfo(chart)[i];
 
         if (evt.type === 'mouseup') {
             select.selectCallback(this.mousedown, this.mouseup);
