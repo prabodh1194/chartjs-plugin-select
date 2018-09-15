@@ -1,7 +1,6 @@
-/*jslint browser:true, devel:true, white:true, vars:true */
-/*global require*/
 Chart = window.Chart;
 
+// returns a point immediately after the selection point
 function _binarySearch(array, value) {
     var i;
     var min = 0;
@@ -9,9 +8,9 @@ function _binarySearch(array, value) {
 
     while(min <= max) {
         i = Math.floor((min + max) /2);
-        if(array[i-1][1] <= value && value <= array[i][1])
+        if(array[i-1].x <= value && value <= array[i].x)
             return i;
-        else if(array[i][1] < value)
+        else if(array[i].x < value)
             min = i;
         else
             max = i;
@@ -24,8 +23,18 @@ function _getIdxInfo(chart) {
     return chart
         .getDatasetMeta(0)
         .data
-        .map(el => [+el._index, +el._model.x, +el._model.y])
-        .sort((a, b) => (a[0]- b[0]));
+        .map(el => ({idx: +el._index, x: +el._model.x, y: +el._model.y}))
+        .sort((a, b) => (a.x - b.x));
+}
+
+function _getDirection(start, end) {
+    if (start === end) {
+        return 0;
+    } else if (start < end) {
+        return 1;
+    } else if (start > end) {
+        return -1;
+    }
 }
 
 var select;
@@ -39,6 +48,13 @@ var selectPlugin = {
         if (evt.type !== 'mousedown' && evt.type !== 'mouseup') {
             return;
         }
+
+        if (evt.type === 'mousedown') {
+            this.init = {};
+            this.selection = {};
+        }
+
+        this.init[evt.type] = evt.x;
     },
     afterEvent: (chart, evt) => {
         if (evt.type !== 'mousedown' && evt.type !== 'mouseup') {
@@ -47,19 +63,27 @@ var selectPlugin = {
 
         var i = _binarySearch(_getIdxInfo(chart), evt.x);
 
-        if (evt.type === 'mousedown') {
-            this.mouseup = null;
-            this.mousedown = null;
-        }
+        this.selection[evt.type] = i;
 
         if (evt.type === 'mouseup') {
-            i -= 1;
-        }
+            var start, end;
+            var direction = _getDirection(this.init.mousedown, this.init.mouseup);
 
-        this[evt.type] = _getIdxInfo(chart)[i];
+            if (direction === 1) {
+                start = _getIdxInfo(chart)[this.selection.mousedown];
+                end = _getIdxInfo(chart)[this.selection.mouseup - 1];
+            } else if (direction === -1) {
+                start = _getIdxInfo(chart)[this.selection.mousedown - 1];
+                end = _getIdxInfo(chart)[this.selection.mouseup];
+            } else {
+                start = end = null;
+            }
 
-        if (evt.type === 'mouseup') {
-            select.selectCallback(this.mousedown, this.mouseup);
+            if (direction === 0 || ((end.idx - start.idx) * (direction) === -1)) {
+                start = end = null;
+            }
+
+            select.selectCallback(start, end);
         }
     }
 };

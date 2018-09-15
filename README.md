@@ -31,11 +31,9 @@ This is called after mouse point is released at the end of select.
 Point is represented by [index of fataset, x-pos of data point, y-pos of data point]
 
 ### Advantages of using this plugin
-Limitless... :-)
+* Limitless... :-)
 
 ### Limitations
 * I have tested this only on a line chart
-* You can only go in positive x direction
-* No error handling yet!!
 
 Follow this repo for updates.
